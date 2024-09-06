@@ -15,12 +15,12 @@ class Manager(BaseUserManager):
         user.save()
         return user
     
-    def create_superuser(self,email,password, **other_field):
+    def create_superuser(self,email,username,password, **other_field):
         other_field.setdefault('is_active',True)
         other_field.setdefault('is_superuser',True)
         other_field.setdefault('is_staff',True)
         other_field.setdefault('is_email_verified',True)
-        return self.create_user(email,password, **other_field)
+        return self.create_user(email,username,password, **other_field)
  
 class User(AbstractBaseUser,PermissionsMixin):
     username = models.CharField(max_length=30, unique=True)
