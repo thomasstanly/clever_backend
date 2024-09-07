@@ -13,6 +13,8 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from .serializers import UserRegisterSerializer, LoginSerializer, TaskSerializer
 from .models import User, TaskManager
 
+
+#  validating the  data generating otp for the user
 @api_view(['POST'])
 def sign_up(request):
     if request.method == 'POST':
@@ -38,6 +40,7 @@ def sign_up(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+# verifying the user mail using otp 
 @api_view(['POST'])
 def otp_verfication(request):
     if request.method == 'POST':
@@ -59,7 +62,7 @@ def otp_verfication(request):
 
         return Response({'message': 'Invalid OTP'}, status=status.HTTP_400_BAD_REQUEST)
     
-
+# login using credentials
 @api_view(['POST'])
 def login(request):
     if request.method == 'POST':
@@ -69,6 +72,7 @@ def login(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+# creating otp and sending to user
 @api_view(['POST'])
 def otp_login(request):
     if request.method == 'POST':
@@ -95,6 +99,7 @@ def otp_login(request):
     return Response({'message': 'OTP mailed','otp':otp_value}, status=status.HTTP_200_OK)
 
 
+# otp verification for login
 @api_view(['POST'])
 def otp_authenticate(request):
     if request.method == 'POST':
@@ -123,6 +128,7 @@ def otp_authenticate(request):
 
         return Response({'message': 'Invalid OTP'}, status=status.HTTP_400_BAD_REQUEST)
 
+
 @api_view(['POST'])
 def logout(request):
     
@@ -136,7 +142,8 @@ def logout(request):
         content = {'message': 'refresh token invalid'}
         return Response(content,status=status.HTTP_400_BAD_REQUEST)
 
-# CRUD operation for 
+
+# CRUD operation for task
 class TaskManger(viewsets.ViewSet):
     permission_classes = [IsAuthenticated]
 

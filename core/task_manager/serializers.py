@@ -3,6 +3,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import AuthenticationFailed
 from .models import User, TaskManager
 
+# serialzer for user registration
 class UserRegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(max_length=30, min_length=6, write_only=True)
     password2 = serializers.CharField(max_length=30, min_length=6, write_only=True)
@@ -35,6 +36,8 @@ class UserRegisterSerializer(serializers.ModelSerializer):
             )
         return user
 
+
+# serialzer for user login
 class LoginSerializer(serializers.ModelSerializer):
     email= serializers.EmailField(max_length=50)
     password = serializers.CharField(max_length=50, write_only=True)
@@ -69,6 +72,7 @@ class LoginSerializer(serializers.ModelSerializer):
             'refresh_token':str(token.get('refresh')),
         }
 
+# serialzer for the task
 class TaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = TaskManager
