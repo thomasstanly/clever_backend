@@ -79,5 +79,5 @@ class TaskManager(models.Model):
         else:
             super().save(*argss,**kwargs)
 
-
-
+    class Meta:
+        ordering = ['-start_date']
