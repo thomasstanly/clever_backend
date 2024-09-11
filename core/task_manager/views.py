@@ -41,7 +41,7 @@ def sign_up(request):
 
 
 # verifying the user mail using otp 
-@api_view(['POST'])
+@api_view(['POST', 'PUT'])
 def otp_verfication(request):
     if request.method == 'POST':
         recived_otp = request.data.get('otpvalue')
@@ -49,8 +49,9 @@ def otp_verfication(request):
         recived_email = request.data.get('email')
        
         user = User.objects.get(email=recived_email)
-
-        if timezone.now() - user.otp_expire > timedelta(seconds=20):
+        print(timezone.now())
+        print(user.otp_expire)
+        if timezone.now() > user.otp_expire:
             return Response({'message':'time expire'},status=status.HTTP_400_BAD_REQUEST)
         
         if recived_otp == str(user.otp):
@@ -61,6 +62,23 @@ def otp_verfication(request):
             return Response({'message': 'User registered successfully'}, status=status.HTTP_201_CREATED)
 
         return Response({'message': 'Invalid OTP'}, status=status.HTTP_400_BAD_REQUEST)
+    
+    if request.method == 'PUT':
+        recived_email = request.data.get('email')
+       
+        user = User.objects.get(email=recived_email)
+        otp_value = random.randint(10000,99999)
+        send_mail(
+            'OTP verification from Clang Mount',
+            f"{otp_value} is your OTP from Clang Mount to verify your email. This is a computer-generated email.",
+            'clangmount@gmail.com',
+            [request.data.get('email')],
+            fail_silently=False
+        )
+        user.otp = otp_value
+        user.otp_expire = timezone.now() + timedelta(seconds=20)
+        user.save()
+        return Response({'expiry':user.otp_expire,'message': 'New OTP sent to registered email'}, status=status.HTTP_200_OK)
     
 # login using credentials
 @api_view(['POST'])
@@ -108,7 +126,7 @@ def otp_authenticate(request):
         print(email)
         user = User.objects.get(email=email)
 
-        if timezone.now() - user.otp_expire > timedelta(seconds=20):
+        if timezone.now() > user.otp_expire:
             return Response({'message':'time expire'},status=status.HTTP_400_BAD_REQUEST)
         
         

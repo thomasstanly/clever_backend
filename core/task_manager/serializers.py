@@ -7,6 +7,8 @@ from .models import User, TaskManager
 class UserRegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(max_length=30, min_length=6, write_only=True)
     password2 = serializers.CharField(max_length=30, min_length=6, write_only=True)
+    email = serializers.EmailField(required=True)
+    username = serializers.CharField(required=True)
 
     class Meta:
         model = User
@@ -20,7 +22,11 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         if password != password2:
             raise serializers.ValidationError('password dosn\'t match')
         if User.objects.filter(email=email).exists():
-            raise serializers.ValidationError('Email is already registered.')
+            user = User.objects.get(email=email)
+            if user.is_email_verified == False:
+                raise serializers.ValidationError('User already exist verify the email through login OTP')
+            else:
+                raise serializers.ValidationError('Email is already registered.')
         if User.objects.filter(username=username).exists():
             raise serializers.ValidationError('Email is already registered.')
         return attrs
